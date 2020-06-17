@@ -14,7 +14,9 @@ registerRouteSimple()
 registerRouteBase()
 registerRouteError()
 registerRouteExtend()
-
+registerRouteInterceptor()
+registerRouteDefaultConfig()
+registerRouteCancellation()
 
 app.use(webpackDevMiddleware(compiler, {
   publicPath: '/__build__/',
@@ -100,6 +102,53 @@ function registerRouteExtend() {
 
   router.patch('/extend/patch', (req,res) => {
     res.json(req.body)
+  })
+
+  router.get('/extend/getUser', (req,res) => {
+    res.json({
+      code: 0,
+      message: 'ok',
+      data: {
+        first: 'dolly',
+        last: 'zhang'
+      }
+    })
+  })
+}
+
+function registerRouteInterceptor() {
+  router.post('/interceptor/post',(req,res) => {
+    res.json({
+      test: '1'
+    })
+  })
+}
+
+function registerRouteDefaultConfig() {
+  router.post('/config/post', (req,res) => {
+    res.json({
+      msg: 'ok'
+    })
+  })
+
+  router.post('/config/transform', (req,res) => {
+    res.json({
+      greet: 'ok'
+    })
+  })
+}
+
+function registerRouteCancellation() {
+  router.get('/cancel/get',(req,res) => {
+    setTimeout(() => {
+      res.end('Not important, cancelled anyway.')
+    }, 200)
+  })
+
+  router.post('/cancel/post',(req,res) => {
+    setTimeout(() => {
+      res.end('Not important, cancelled anyway.')
+    },200)
   })
 }
 

@@ -1,9 +1,60 @@
-import { RequestConfig, AxiosPromise, Method } from '../type'
+import { RequestConfig, AxiosPromise, Method, AxiosResponse } from '../type'
 import dispathRequest from './dispatchRequest'
+import InterceptorManager from './InterceptorManager'
+import mergeConfig from './mergeConfig'
+import defaultConfig from '../defaults/defaultConfig'
 
 class Axios {
-  request(config: RequestConfig): AxiosPromise {
-    return dispathRequest(config)
+  defaults: RequestConfig
+
+  interceptors: {
+    request: InterceptorManager<RequestConfig>
+    response: InterceptorManager<AxiosResponse>
+  }
+
+  constructor(defaults: RequestConfig) {
+    this.defaults = defaults
+
+    this.interceptors = {
+      request: new InterceptorManager<RequestConfig>(),
+      response: new InterceptorManager<AxiosResponse>()
+    }
+  }
+
+  request(url: any, config?: any): AxiosPromise {
+    if (typeof url === 'string') {
+      if (!config) {
+        config = {}
+      }
+      config.url = url
+    } else {
+      config = url
+    }
+
+    config = mergeConfig(defaultConfig, config)
+
+    const taskQueue: any[] = [
+      {
+        resolvedFn: dispathRequest,
+        rejectedFn: null
+      }
+    ]
+
+    this.interceptors.request.forEach(interceptors => {
+      taskQueue.unshift(interceptors)
+    })
+
+    this.interceptors.response.forEach(interceptors => {
+      taskQueue.push(interceptors)
+    })
+
+    let promise = Promise.resolve(config)
+    while (taskQueue.length) {
+      const { resolvedFn, rejectedFn } = taskQueue.shift()
+      promise = promise.then(resolvedFn, rejectedFn)
+    }
+
+    return promise
   }
 
   get(url: string, config?: RequestConfig): AxiosPromise {

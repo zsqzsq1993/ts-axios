@@ -1,10 +1,11 @@
 import { RequestConfig, AxiosPromise, AxiosResponse } from '../type'
 import { parseHeaders } from '../helpers/headers'
 import { createAxiosError } from '../helpers/errors'
+import { isCancel } from '../cancel/Cancel'
 
 export function xhr(config: RequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
-    const { method = 'get', url, data, headers, responseType, timeout } = config
+    const { method = 'get', url, data, headers, responseType, timeout, cancelToken } = config
     const request = new XMLHttpRequest()
 
     if (responseType) {
@@ -16,6 +17,17 @@ export function xhr(config: RequestConfig): AxiosPromise {
     }
 
     request.open(method.toUpperCase(), url!, true)
+
+    if (cancelToken) {
+      cancelToken.throwIfRequested()
+
+      cancelToken.promise.then(reason => {
+        if (isCancel(reason)) {
+          request.abort()
+          reject(reason)
+        }
+      })
+    }
 
     if (data !== null) {
       Object.keys(headers).forEach((key: string) => {
