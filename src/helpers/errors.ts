@@ -12,7 +12,7 @@ class AxiosError extends Error implements AxiosErr {
 
     this.isAxiosError = true
     this.config = config.config
-    this.code = config.code || ''
+    this.code = config.code || null
     this.request = config.request || {}
     this.response = config.response || {}
 

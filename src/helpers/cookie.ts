@@ -4,6 +4,8 @@ const cookie = {
     const matches = cookies.match(new RegExp(`(^|;\\s*)(${name})=([^;]*)`))
     if (matches) {
       return decodeURIComponent(matches[3])
+    } else {
+      return null
     }
   }
 }

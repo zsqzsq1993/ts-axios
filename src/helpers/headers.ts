@@ -1,6 +1,10 @@
 import { isPlainObject, deepMerge } from './utils'
 
 function normalizeHeader(headers: any, normalizedName: string): void {
+  if (!headers) {
+    return
+  }
+
   Object.keys(headers).forEach((key: string) => {
     if (key !== normalizedName && key.toUpperCase() === normalizedName.toUpperCase()) {
       headers[normalizedName] = headers[key]
@@ -12,7 +16,7 @@ function normalizeHeader(headers: any, normalizedName: string): void {
 export function processHeaders(headers: any, data: any): any {
   if (isPlainObject(data)) {
     normalizeHeader(headers, 'Content-Type')
-    if (headers && !headers['Content-Types']) {
+    if (headers && !headers['Content-Type']) {
       headers['Content-Type'] = 'application/json; charset=utf-8'
     }
   }
@@ -23,16 +27,15 @@ export function parseHeaders(headers: string): any {
   const parsed = Object.create(null)
   if (headers) {
     headers.split('\r\n').forEach(line => {
-      let [key, value] = line.split(':')
+      let [key, ...values] = line.split(':')
+      let vals
       if (key) {
         key = key.trim().toLowerCase()
       } else {
         return
       }
-      if (value) {
-        value = value.trim()
-      }
-      parsed[key] = value
+      vals = values.join(':').trim()
+      parsed[key] = vals
     })
   }
   return parsed
