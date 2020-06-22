@@ -1,8 +1,9 @@
 import { RequestConfig, AxiosPromise } from '../type'
 import { xhr } from './xhr'
-import { concatURL } from '../helpers/urls'
+import { concatBaseURL, concatURL } from '../helpers/urls'
 import { flatternHeaders } from '../helpers/headers'
 import transform from './transform'
+import { isAbsolute } from 'path'
 
 function dispathRequest(config: RequestConfig): AxiosPromise {
   processConfig(config)
@@ -18,9 +19,12 @@ function processConfig(config: RequestConfig): void {
   config.headers = flatternHeaders(config.headers, config.method!)
 }
 
-function transformURL(config: RequestConfig): string {
-  const { url, params } = config
-  return concatURL(url!, params)
+export function transformURL(config: RequestConfig): string {
+  let { url, params, paramsSerializer, baseURL } = config
+  if (baseURL && !isAbsolute(url!)) {
+    url = concatBaseURL(baseURL, url!)
+  }
+  return concatURL(url!, params, paramsSerializer)
 }
 
 export default dispathRequest

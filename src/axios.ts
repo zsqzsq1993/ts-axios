@@ -23,4 +23,16 @@ axios.CancelToken = CancelToken as CancelTokenStatic
 axios.Cancel = Cancel
 axios.isCancel = isCancel
 
+axios.Axios = Axios
+
+axios.all = promises => {
+  return Promise.all(promises)
+}
+
+axios.spread = callback => {
+  return function(arr) {
+    return callback.apply(null, arr)
+  }
+}
+
 export default axios

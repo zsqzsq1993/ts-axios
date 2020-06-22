@@ -1,8 +1,7 @@
 import { RequestConfig, AxiosPromise, Method, AxiosResponse } from '../type'
-import dispathRequest from './dispatchRequest'
+import dispathRequest, { transformURL } from './dispatchRequest'
 import InterceptorManager from './InterceptorManager'
 import mergeConfig from './mergeConfig'
-import defaultConfig from '../defaults/defaultConfig'
 
 class Axios {
   defaults: RequestConfig
@@ -31,7 +30,7 @@ class Axios {
       config = url
     }
 
-    config = mergeConfig(defaultConfig, config)
+    config = mergeConfig(this.defaults, config)
 
     const taskQueue: any[] = [
       {
@@ -55,6 +54,10 @@ class Axios {
     }
 
     return promise
+  }
+
+  getUri(config: RequestConfig) {
+    return transformURL(config)
   }
 
   get(url: string, config?: RequestConfig): AxiosPromise {

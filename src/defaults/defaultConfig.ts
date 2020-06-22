@@ -24,7 +24,15 @@ const defaultConfig: RequestConfig = {
     function(response) {
       return transformResponse(response)
     }
-  ]
+  ],
+
+  xsrfCookieName: 'X-XSRF-TOKEN',
+
+  xsrfHeaderName: 'X-X-XSRF-TOKEN',
+
+  validateStatus(status) {
+    return status >= 200 && status < 300
+  }
 }
 
 const noDataMethods = ['get', 'head', 'delete', 'options']

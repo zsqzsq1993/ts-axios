@@ -33,6 +33,15 @@ export interface RequestConfig {
   transformRequest?: AxiosTransformer | AxiosTransformer[]
   transformResponse?: AxiosTransformer | AxiosTransformer[]
   cancelToken?: CancelToken // 用来储存CancelToken实例
+  withCredentials?: boolean // 跨域请求是否携带cookie
+  xsrfCookieName?: string // cookie中用来存储token的字段
+  xsrfHeaderName?: string // headers中用来设置token的字段
+  onDownloadProgress?: (e: ProgressEvent) => void
+  onUploadProgress?: (e: ProgressEvent) => void
+  auth?: AxiosAuthorization
+  validateStatus?: (status: number) => boolean
+  paramsSerializer?: (params: any) => string
+  baseURL?: string
 
   [key: string]: any
 }
@@ -115,6 +124,8 @@ export interface Axios {
   put<T = any>(url: string, data?: any, config?: RequestConfig): AxiosPromise<T>
 
   patch<T = any>(url: string, data?: any, config?: RequestConfig): AxiosPromise<T>
+
+  getUri(config: RequestConfig): string
 }
 
 /**
@@ -137,6 +148,18 @@ export interface AxiosStatic extends AxiosInstance {
   CancelToken: CancelTokenStatic
   Cancel: CancelStatic
   isCancel: IsCancel
+
+  /* 扩展的一些其他静态方法（不常用）*/
+  all<T>(promises: Array<T | Promise<T>>): Promise<T[]>
+  spread<T, R>(callback: (...args: T[]) => R): (args: T[]) => R
+  Axios: AxiosClassStatic
+}
+
+/**
+ * 向外暴露Axios类
+ */
+export interface AxiosClassStatic {
+  new (config: RequestConfig): Axios
 }
 
 /**
@@ -223,4 +246,12 @@ export interface CancelStatic {
  */
 export interface IsCancel {
   (value: any): boolean
+}
+
+/**
+ * auth字段的传入对象类型
+ */
+export interface AxiosAuthorization {
+  username: string
+  password: string
 }

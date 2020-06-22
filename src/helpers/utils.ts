@@ -14,6 +14,14 @@ export function isDate(value: any): value is Date {
   return toString.call(value) === '[object Date]'
 }
 
+export function isFormData(value: any): value is FormData {
+  return value !== 'undefined' && value instanceof FormData
+}
+
+export function isURLSearchParmas(value: any): value is URLSearchParams {
+  return value !== 'undefined' && value instanceof URLSearchParams
+}
+
 export function extend<T, U>(to: T, from: U): T & U {
   for (let key in from) {
     const value = from[key]

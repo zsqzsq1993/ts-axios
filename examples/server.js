@@ -1,9 +1,14 @@
 const express = require('express')
 const parser = require('body-parser')
+const cookie_parser = require('cookie-parser')
 const webpack = require('webpack')
 const webpackConfig = require('./webpack.config')
 const webpackDevMiddleware = require('webpack-dev-middleware')
 const webpackHotMiddleware = require('webpack-hot-middleware')
+const multipart = require('connect-multiparty')
+const path = require('path')
+const atob = require('atob')
+require('./server2.js')
 
 const app = express()
 const router = express.Router()
@@ -17,6 +22,8 @@ registerRouteExtend()
 registerRouteInterceptor()
 registerRouteDefaultConfig()
 registerRouteCancellation()
+registerRouteMore()
+registerRouteXsrf()
 
 app.use(webpackDevMiddleware(compiler, {
   publicPath: '/__build__/',
@@ -28,11 +35,21 @@ app.use(webpackDevMiddleware(compiler, {
 
 app.use(webpackHotMiddleware(compiler))
 
-app.use(express.static(__dirname))
+app.use(express.static(__dirname, {
+  setHeaders (res) {
+    res.cookie('X-XSRF-TOKEN-DOLLY','abc1234')
+  }
+}))
+
+app.use(multipart({
+  uploadDir: path.resolve(__dirname, 'upload')
+}))
 
 app.use(parser.json())
 
 app.use(parser.urlencoded({extended: true}))
+
+app.use(cookie_parser())
 
 app.use(router)
 
@@ -152,4 +169,40 @@ function registerRouteCancellation() {
   })
 }
 
+function registerRouteMore() {
+  router.get('/more/get', (req,res) => {
+    res.json(req.cookies)
+  })
+
+  router.post('/more/upload', (req, res) => {
+    res.end('hi')
+  })
+
+  router.post('/more/auth', (req,res) => {
+    const [type, credential] = req.headers.authorization.split(' ')
+    const [username, password] = atob(credential).split(':')
+    if (type === 'Basic' && username === 'dolly' && password === 'dolly123') {
+      res.json(req.body)
+    } else {
+      res.status(401)
+      res.end()
+    }
+  })
+
+  router.get('/more/304', (req,res) => {
+    res.status(304)
+    res.end('good')
+  })
+
+  router.get('/more/306', (req,res) => {
+    res.status(306)
+    res.end('good')
+  })
+}
+
+function registerRouteXsrf() {
+  router.get('/xsrf/get', (req,res) => {
+    res.end('hi')
+  })
+}
 

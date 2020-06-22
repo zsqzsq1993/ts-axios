@@ -2,7 +2,7 @@ import { RequestConfig } from '../type'
 import { deepMerge, isPlainObject } from '../helpers/utils'
 
 const onlyCustomFeats = ['url', 'params', 'data']
-const deepMergedFeats = ['headers']
+const deepMergedFeats = ['headers', 'auth']
 const strategies = formStrategies()
 
 function mergeConfig(defaultConfig: RequestConfig, customConfig?: RequestConfig) {
