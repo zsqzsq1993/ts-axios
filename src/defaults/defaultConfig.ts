@@ -15,14 +15,14 @@ const defaultConfig: RequestConfig = {
 
   transformRequest: [
     function(data, headers) {
-      headers = processHeaders(headers, data)
+      processHeaders(headers, data)
       return transformRequest(data)
     }
   ],
 
   transformResponse: [
-    function(response) {
-      return transformResponse(response)
+    function(data: any) {
+      return transformResponse(data)
     }
   ],
 

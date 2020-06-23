@@ -1,4 +1,4 @@
-import { RequestConfig, AxiosPromise } from '../type'
+import { RequestConfig, AxiosPromise, AxiosErr } from '../type'
 import { xhr } from './xhr'
 import { concatBaseURL, concatURL } from '../helpers/urls'
 import { flatternHeaders } from '../helpers/headers'
@@ -7,10 +7,22 @@ import { isAbsolute } from 'path'
 
 function dispathRequest(config: RequestConfig): AxiosPromise {
   processConfig(config)
-  return xhr(config).then(response => {
-    response = transform(response, config.headers, config.transformResponse!)
-    return response
-  })
+  return xhr(config).then(
+    response => {
+      response.data = transform(response.data, config.headers, config.transformResponse!)
+      return response
+    },
+    (error: AxiosErr) => {
+      if (error && error.response) {
+        error.response.data = transform(
+          error.response.data,
+          config.headers,
+          config.transformResponse!
+        )
+      }
+      return Promise.reject(error)
+    }
+  )
 }
 
 function processConfig(config: RequestConfig): void {

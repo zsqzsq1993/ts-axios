@@ -32,6 +32,8 @@ class Axios {
 
     config = mergeConfig(this.defaults, config)
 
+    config.method = config.method.toLowerCase()
+
     const taskQueue: any[] = [
       {
         resolvedFn: dispathRequest,
