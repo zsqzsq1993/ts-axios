@@ -7,7 +7,7 @@ const strategies = formStrategies()
 
 function mergeConfig(defaultConfig: RequestConfig, customConfig?: RequestConfig) {
   if (!customConfig) {
-    return defaultConfig
+    customConfig = {}
   }
 
   let mergedConfig = Object.create(null)
@@ -17,7 +17,7 @@ function mergeConfig(defaultConfig: RequestConfig, customConfig?: RequestConfig)
   })
 
   Object.keys(defaultConfig).forEach(key => {
-    if (!customConfig[key]) {
+    if (!customConfig![key]) {
       mergedConfig[key] = merge(key)
     }
   })
