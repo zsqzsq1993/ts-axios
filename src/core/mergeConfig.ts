@@ -33,13 +33,14 @@ function mergeConfig(defaultConfig: RequestConfig, customConfig?: RequestConfig)
 }
 
 function onlyCustomStrategy(defaults: any, custom?: any) {
-  if (custom) {
+  if (typeof custom !== 'undefined') {
+    // 不能用!custom 防止传入的是false或true
     return custom
   }
 }
 
 function defaultStrategy(defaults: any, custom?: any) {
-  if (custom) {
+  if (typeof custom !== 'undefined') {
     return custom
   } else {
     return defaults
@@ -51,7 +52,10 @@ function deepMergeStrategy(defaults: any, custom?: any) {
     return deepMerge(defaults, custom)
   } else if (typeof custom !== 'undefined') {
     return custom
-  } else if (typeof defaults !== 'undefined') {
+  } else if (isPlainObject(defaults)) {
+    // 这个一定不能够省去！！！！！！！！！因为defaults一定不能引用赋值，不然会被污染
+    return deepMerge(defaults)
+  } else {
     return defaults
   }
 }

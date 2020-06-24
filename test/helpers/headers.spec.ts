@@ -31,7 +31,7 @@ describe('helpers:headers', () => {
     const dataString = 'hello'
     test('only handle plain object', () => {
       expect(processHeaders({}, dataString)['Content-Type']).toBeUndefined()
-      expect(processHeaders({}, data)['Content-Type']).toBe('application/json; charset=utf-8')
+      expect(processHeaders({}, data)['Content-Type']).toBe('application/json;charset=utf-8')
     })
 
     test('should normalize content-type', () => {
@@ -50,7 +50,7 @@ describe('helpers:headers', () => {
     })
 
     test('normal case', () => {
-      expect(processHeaders({}, data)['Content-Type']).toBe('application/json; charset=utf-8')
+      expect(processHeaders({}, data)['Content-Type']).toBe('application/json;charset=utf-8')
     })
   })
 

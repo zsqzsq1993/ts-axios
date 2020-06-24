@@ -11,7 +11,7 @@ export function xhr(config: RequestConfig): AxiosPromise {
     const {
       method = 'get',
       url,
-      data,
+      data = null,
       headers,
       responseType,
       timeout,
