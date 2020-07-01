@@ -120,6 +120,13 @@ export function xhr(config: RequestConfig): AxiosPromise {
         headers['Authorization'] = `Basic ${base64}`
       }
 
+      if ((withCredentials || isURLSameOrigin(url!)) && xsrfCookieName && xsrfHeaderName) {
+        const cookieVal = cookie.read(xsrfCookieName)
+        if (cookieVal) {
+          headers[xsrfHeaderName] = cookieVal
+        }
+      }
+
       Object.keys(headers).forEach((key: string) => {
         if (data === null && key.toLowerCase() === 'content-type') {
           delete headers[key]
@@ -127,13 +134,6 @@ export function xhr(config: RequestConfig): AxiosPromise {
           request.setRequestHeader(key, headers[key])
         }
       })
-
-      if ((withCredentials || isURLSameOrigin(url!)) && xsrfCookieName && xsrfHeaderName) {
-        const cookieVal = cookie.read(xsrfCookieName)
-        if (cookieVal) {
-          headers[xsrfHeaderName] = cookieVal
-        }
-      }
     }
 
     function processCancel() {
