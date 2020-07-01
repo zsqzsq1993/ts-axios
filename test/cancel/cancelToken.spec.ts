@@ -1,6 +1,8 @@
 import CancelToken from '../../src/cancel/CancelToken'
 import { Canceller } from '../../src/type'
 import { Cancel } from '../../src/cancel/Cancel'
+import axios from '../../src'
+import { getAjaxRequest } from '../helper'
 
 describe('cancel:CancelToken', () => {
   describe('reason', function() {
@@ -12,6 +14,16 @@ describe('cancel:CancelToken', () => {
       cancel!('cannceled by customer.')
       expect(token.reason instanceof Cancel)
       expect(token.reason!.message).toBe('cannceled by customer.')
+    })
+
+    test('should optionally provide cancel reason message', () => {
+      let cancel: Canceller
+      const token = new CancelToken(c => {
+        cancel = c
+      })
+      cancel!()
+      expect(token.reason instanceof Cancel)
+      expect(token.reason!.message).toBe('')
     })
 
     test('reason should be undefined if nothing to be done', () => {
@@ -86,6 +98,47 @@ describe('cancel:CancelToken', () => {
         done()
       })
       source.cancel(message)
+    })
+  })
+
+  describe('cancel in axios', function() {
+    beforeEach(() => {
+      jasmine.Ajax.install()
+    })
+
+    afterEach(() => {
+      jasmine.Ajax.uninstall()
+    })
+
+    test('cancel function in axios', done => {
+      let cancel: Canceller
+      axios({
+        url: '/foo',
+        cancelToken: new axios.CancelToken(c => {
+          cancel = c
+        })
+      })
+        .then(res => {
+          throw new Error('should not go into here.')
+        })
+        .catch(e => {
+          expect(e instanceof Cancel).toBeTruthy()
+          expect((e as Cancel).message).toBe('cancelled by myself')
+          done()
+        })
+
+      getAjaxRequest().then(req => {
+        setTimeout(() => {
+          req.respondWith({
+            status: 200,
+            responseText: 'hello'
+          })
+        }, 200)
+      })
+
+      setTimeout(() => {
+        cancel('cancelled by myself')
+      }, 100)
     })
   })
 })

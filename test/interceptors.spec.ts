@@ -185,5 +185,33 @@ describe('interceptors', () => {
         })
       })
     })
+
+    test('should support ejecting an interceptor', done => {
+      const instance = axios.create()
+      const id = instance.interceptors.response.use(response => {
+        response.data += '1'
+        return response
+      })
+      instance.interceptors.response.eject(id)
+
+      instance.interceptors.response.use(response => {
+        response.data += '2'
+        return response
+      })
+      instance.interceptors.response.use(response => {
+        response.data += '3'
+        return response
+      })
+      instance('/foo').then(res => {
+        expect(res.data).toBe('hello23')
+        done()
+      })
+      getAjaxRequest().then(request => {
+        request.respondWith({
+          status: 200,
+          responseText: 'hello'
+        })
+      })
+    })
   })
 })
