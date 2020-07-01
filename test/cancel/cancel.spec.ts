@@ -11,6 +11,6 @@ describe('cancel:Cancel', () => {
   })
 
   test('should return false if it is not cancel', () => {
-    expect(isCancel(new Cancel())).toBeFalsy()
+    expect(isCancel({})).toBeFalsy()
   })
 })

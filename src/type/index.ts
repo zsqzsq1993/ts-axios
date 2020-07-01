@@ -52,7 +52,7 @@ export interface RequestConfig {
  * data(and headers) and response
  */
 export interface AxiosTransformer {
-  (data: any, headers: any): any
+  (data: any, headers?: any): any
 }
 
 /**

@@ -1,6 +1,6 @@
 import { RequestConfig, AxiosPromise, AxiosErr } from '../type'
 import { xhr } from './xhr'
-import { concatBaseURL, concatURL } from '../helpers/urls'
+import { concatBaseURL, concatURL, isAbsoluteURL } from '../helpers/urls'
 import { flatternHeaders } from '../helpers/headers'
 import transform from './transform'
 import { isAbsolute } from 'path'
@@ -33,7 +33,7 @@ function processConfig(config: RequestConfig): void {
 
 export function transformURL(config: RequestConfig): string {
   let { url, params, paramsSerializer, baseURL } = config
-  if (baseURL && !isAbsolute(url!)) {
+  if (baseURL && !isAbsoluteURL(url!)) {
     url = concatBaseURL(baseURL, url!)
   }
   return concatURL(url!, params, paramsSerializer)
