@@ -303,4 +303,21 @@ describe('request', () => {
       }, 100)
     })
   })
+
+  test('test responseType', done => {
+    axios({
+      url: '/foo',
+      responseType: 'text'
+    }).then(res => {
+      expect(res.data).toBe('hello')
+      done()
+    })
+
+    getAjaxRequest().then(req => {
+      req.respondWith({
+        status: 200,
+        responseText: 'hello'
+      })
+    })
+  })
 })

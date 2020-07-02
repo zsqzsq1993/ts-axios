@@ -7,6 +7,7 @@ class AxiosError extends Error implements AxiosErr {
   request: any
   response: any
 
+  /* istanbul ignore next */
   constructor(config: AxiosErrorConfig) {
     super(config.message)
 

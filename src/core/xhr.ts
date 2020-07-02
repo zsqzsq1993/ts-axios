@@ -9,7 +9,7 @@ import { isFormData } from '../helpers/utils'
 export function xhr(config: RequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
     const {
-      method = 'get',
+      method,
       url,
       data = null,
       headers = {},
@@ -27,7 +27,7 @@ export function xhr(config: RequestConfig): AxiosPromise {
 
     const request = new XMLHttpRequest()
 
-    request.open(method.toUpperCase(), url!, true)
+    request.open(method!.toUpperCase(), url!, true)
 
     processConfig()
 
@@ -76,7 +76,8 @@ export function xhr(config: RequestConfig): AxiosPromise {
         const status = request.status
         const statusText = request.statusText
         const headers = parseHeaders(request.getAllResponseHeaders())
-        const data = responseType === 'text' ? request.responseText : request.response
+        const data =
+          responseType === 'text' || !responseType ? request.responseText : request.response
         const response: AxiosResponse = {
           status,
           statusText,
@@ -141,10 +142,8 @@ export function xhr(config: RequestConfig): AxiosPromise {
         cancelToken.throwIfRequested()
 
         cancelToken.promise.then(reason => {
-          if (isCancel(reason)) {
-            request.abort()
-            reject(reason)
-          }
+          request.abort()
+          reject(reason)
         })
       }
     }
