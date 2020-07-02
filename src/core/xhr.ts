@@ -144,6 +144,10 @@ export function xhr(config: RequestConfig): AxiosPromise {
         cancelToken.promise.then(reason => {
           request.abort()
           reject(reason)
+        }).catch(e =>
+        /* istanbul ignore next */
+        {
+          // do nothing
         })
       }
     }
