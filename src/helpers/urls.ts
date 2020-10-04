@@ -39,8 +39,10 @@ export function concatURL(
     url = url.slice(0, hashIndex)
   }
 
+  // 优先使用自定义的serializer
   if (paramsSerializer) {
     serializedParams = paramsSerializer(params)
+  // 次优先判断是否为URLSearchParams对象
   } else if (isURLSearchParmas(params)) {
     serializedParams = params.toString()
   } else {
@@ -48,6 +50,8 @@ export function concatURL(
     Object.keys(params).forEach((key: string) => {
       let param = params[key]
       if (param === null || typeof param === 'undefined') {
+        // 这里是用return，因为在forEach内部
+        // 如果是用for循环，使用continue
         return
       }
       if (isArray(param)) {

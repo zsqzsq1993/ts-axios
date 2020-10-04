@@ -15,7 +15,10 @@ function normalizeHeader(headers: any, normalizedName: string): void {
 
 export function processHeaders(headers: any, data: any): any {
   if (isPlainObject(data)) {
+    // headers中存在content-type但字母大小写不一致的，全部转变为Content-Type
     normalizeHeader(headers, 'Content-Type')
+
+    // data为plainObject + headers中没有显示指明Content-Type => application/json
     if (headers && !headers['Content-Type']) {
       headers['Content-Type'] = 'application/json;charset=utf-8'
     }
